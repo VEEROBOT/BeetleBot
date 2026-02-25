@@ -1,331 +1,392 @@
-# 🤖 BeetleBot - User Guide
+# 🤖 BeetleBot - Complete User Guide
 
-> An autonomous indoor/outdoor robot built on ROS2 (Robot Operating System 2)
-
----
-
-## 📋 Quick Overview
-
-**BeetleBot** is a small differential-drive robot that can:
-
-- ✅ **Map your space** - Create maps while driving around
-- ✅ **Navigate autonomously** - Drive to locations automatically  
-- ✅ **Manual control** - Drive it like an RC car with a joystick
-- ✅ **See the environment** - Camera for visual feedback
-- ✅ **Detect obstacles** - 360° LiDAR scanner
-- ✅ **Know its position** - IMU and encoders for precise movement
-
-**What's inside:** Raspberry Pi 5, STM32 microcontroller, RPLiDAR A1, Pi Camera, and more.
+> An autonomous indoor/outdoor robot built on **ROS2 Jazzy**
 
 ---
 
-## 🚀 Getting Started (5 Minutes)
+## 📚 **Documentation Inside This Repository**
 
-### Step 0: Check Your Hardware
+**Complete documentation is included:**
+- [docs_ros2/README.md](docs_ros2/README.md) - Overview of all tools
+- [docs_ros2/LYRA_QUICK_REFERENCE.md](docs_ros2/LYRA_QUICK_REFERENCE.md) - Command cheat sheet
+- [docs_ros2/LYRA_COMMAND_UTILITY_SETUP.md](docs_ros2/LYRA_COMMAND_UTILITY_SETUP.md) - Detailed setup
 
-Before starting, make sure you have:
+**Hardware and system setup** is typically done during initial robot deployment. If you need to reconfigure the robot (WiFi, network, etc.), contact your system administrator.
 
-- ✓ BeetleBot robot (powered on)
-- ✓ **Joystick controller** (wireless recommended)
-- ✓ **Computer running ROS 2 Humble** (Ubuntu 22.04 or WSL2)
-- ✓ **Network wireless connection** between computer and robot
-- ✓ Maps folder (included if you want autonomous navigation)
+---
 
-### Step 1: Connect to the Robot's WiFi Network
+## 🎯 What is BeetleBot?
 
-The robot broadcasts its own WiFi network:
+**BeetleBot** is a mobile robot that can:
 
-- **Network name:** `LYRA-xxxx` (where xxxx is a unique ID)
-- **Password:** Check the label on your robot or ask your administrator
+- ✅ **Map environments autonomously** - SLAM (Simultaneous Localization & Mapping)
+- ✅ **Navigate without human control** - Autonomous path planning with obstacle avoidance
+- ✅ **Manual joystick control** - Real-time remote driving
+- ✅ **Vision sensing** - Onboard camera for scene understanding
+- ✅ **360° obstacle detection** - RPLiDAR scanner
+- ✅ **Precise localization** - IMU + encoders + odometry fusion
 
-Once connected, open a terminal and test the connection:
+**Hardware:** Raspberry Pi 5, STM32 microcontroller, RPLiDAR A1, Pi Camera
+
+---
+
+## 🚀 Quick Start (For Existing Users)
+
+### Robot is Running and Ready?
+
+Use the command shortcut utility (fastest way):
 
 ```bash
-ping 192.168.4.1
-# Should see replies like: 64 bytes from 192.168.4.1
+# Enable commands (one-time setup)
+source ~/lyra_ws/lyra_commands.sh
+
+# Now use simple commands:
+lyra-launch-robot-teleop          # Manual joystick control
+lyra-launch-robot-slam            # Map while driving
+lyra-launch-robot-nav <map.yaml>  # Autonomous navigation
+lyra-battery                      # Check battery voltage
+lyra-status                        # Quick health check
+lyra-launch-rviz                  # Visualize robot & sensors
 ```
 
-### Step 2: Set Up Your Computer
+See [Command Reference](#-command-reference) below for all available commands.
 
-Install ROS 2 Humble on your computer:
+### Or Use Raw ROS2 Commands
 
-```bash
-# For Ubuntu 22.04
-sudo apt update
-sudo apt install ros-humble-desktop
-
-# Verify installation
-source /opt/ros/humble/setup.bash
-ros2 --version  # Should show version info
-```
-
-**For Windows users:** Use WSL 2 with Ubuntu 22.04. See [Windows Setup Guide](docs_ros2/WINDOWS_WSL_SETUP_GUIDE.md)
-
-### Step 3: Get the Robot Code
-
-Clone the repository:
+If you prefer ROS2 commands directly:
 
 ```bash
-mkdir -p ~/ros2_ws/src
-cd ~/ros2_ws/src
-git clone https://github.com/VEEROBOT/BeetleBot.git
-cd ..
-
-# Build the workspace
-colcon build --symlink-install
-source install/setup.bash
-```
-
-### Step 4: Launch Your Robot!
-
-Pick one of these options:
-
-#### **Manual Control (Easiest - Start Here!)**
-```bash
+# Manual control (joystick)
 ros2 launch lyra_bringup robot.launch.py mode:=teleop
-```
-- **Connect your joystick**
-- **Left stick:** Move forward/backward and turn
-- **Done!** Your robot should respond to the joystick
 
-#### **Mapping Mode (Create a Map)**
-```bash
+# Mapping mode
 ros2 launch lyra_bringup robot.launch.py mode:=slam
-```
-- Drive the robot around your space using the joystick
-- It creates a map as it moves
-- **Save the map when done:**
-  ```bash
-  ros2 run nav2_map_server map_saver_cli -f ~/maps/my_map
-  ```
 
-#### **Autonomous Navigation (Advanced)**
-```bash
+# Autonomous navigation
 ros2 launch lyra_bringup robot.launch.py mode:=nav map:=~/maps/house_map.yaml
+
+# With IMU enabled (optional)
+ros2 launch lyra_bringup robot.launch.py mode:=teleop imu:=true
+
+# With Camera enabled (optional)
+ros2 launch lyra_bringup robot.launch.py mode:=slam camera:=true
 ```
-- Uses a saved map to drive automatically
-- Point-to-point navigation with obstacle avoidance
-- See [Navigation Guide](#navigation-guide) below
 
 ---
 
-## 🎮 Operating Modes Explained
+## 📖 Operating Modes Explained
 
-### 1. **Teleop (Manual Drive)**
-- Drive the robot like an RC car
-- Use joystick for full control
-- Perfect for testing and learning
+The robot can operate in three main modes, controlled by the `mode` parameter:
 
-**Command:**
+### 1. **Teleop Mode (Manual Drive)**
+
+Drive the robot like an RC car using a joystick.
+
+**Start it:**
 ```bash
-ros2 launch lyra_bringup robot.launch.py mode:=teleop
+lyra-launch-robot-teleop
+# Or: ros2 launch lyra_bringup robot.launch.py mode:=teleop
 ```
 
-**Joystick Mapping:**
-- **Left Stick Up/Down:** Move forward/backward
-- **Left Stick Left/Right:** Rotate left/right
-- **Right Triggers:** Fine movement control
+**Before driving:**
+```bash
+lyra-arm                         # Enable motors (REQUIRED)
+```
+
+**Joystick Control:**
+- Left stick: forward/backward and rotation
+- Right triggers: fine movement
+
+**When done:**
+```bash
+lyra-disarm                      # Disable motors
+```
 
 ---
 
-### 2. **SLAM (Simultaneous Localization and Mapping)**
-- Robot creates a map while you drive it around
-- "Sees" the environment with LiDAR
-- Understands its own position
+### 2. **SLAM Mode (Create Maps)**
 
-**Command:**
+Robot maps the environment while you drive it around with the joystick.
+
+**Start it:**
 ```bash
-ros2 launch lyra_bringup robot.launch.py mode:=slam
+lyra-launch-robot-slam
+# Or: ros2 launch lyra_bringup robot.launch.py mode:=slam
 ```
 
-**What to do:**
-1. Launch the command above (wait for "READY" message)
-2. Drive the robot around your space
-3. Try to revisit places you've already mapped (helps improve map quality)
-4. When done, save the map:
+**Process:**
+1. Drive around your entire space with the joystick
+2. Try to revisit areas you've already mapped (improves accuracy)
+3. When complete, save the map:
    ```bash
    ros2 run nav2_map_server map_saver_cli -f ~/maps/my_map
    ```
-5. You'll get a `.pgm` image file and a `.yaml` config file
+4. You'll get `my_map.pgm` (image) and `my_map.yaml` (config)
+
+**Monitor mapping progress:**
+```bash
+lyra-launch-rviz    # In another terminal - watch the map build in real-time
+```
 
 **Tips:**
-- Drive slowly for better accuracy
-- Cover all areas you want to navigate
-- Revisit hallways from different directions
+- Drive slowly for better accuracy  
+- Cover all areas including corners and hallways
+- Revisit hallways from different directions to improve map quality
 
 ---
 
-### 3. **Nav2 (Autonomous Navigation)**
-- Robot automatically drives to a target location
-- Avoids obstacles using the LiDAR
-- Finds the best path around obstacles
+### 3. **Nav2 Mode (Autonomous Navigation)**
+
+Robot autonomously drives to target locations using a pre-made map.
 
 **Requirements:**
-- A saved map from SLAM mode
+- A saved map from SLAM mode (e.g., `~/maps/house_map.yaml`)
 
-**Command:**
+**Start it:**
 ```bash
-ros2 launch lyra_bringup robot.launch.py mode:=nav map:=~/maps/house_map.yaml
+lyra-launch-robot-nav ~/maps/house_map.yaml
+# Or: ros2 launch lyra_bringup robot.launch.py mode:=nav map:=~/maps/house_map.yaml
 ```
 
-**How to send a goal:**
-1. Window opens showing the map
-2. Click on the map to place the goal
-3. Robot drives there automatically
-4. It avoids obstacles if they appear
+**Send robot to a location:**
+1. Open RViz: `lyra-launch-rviz` (in another terminal)
+2. In RViz window: Click "Nav2 Goal" button  
+3. Click on the map where you want robot to go
+4. Robot drives there, avoiding obstacles
+5. Joystick can override navigation at any time
 
 ---
 
-## 🔧 Enabling Optional Sensors
+## 🔌 Optional Features (IMU and Camera)
 
-### With IMU (Better Accuracy)
+The robot can optionally use:
+- **IMU:** Improved accuracy (inertial measurement unit)
+- **Camera:** Visual monitoring
+
+By default, both are **OFF** (`imu:=false`, `camera:=false`) for reliability.
+
+### Enable IMU (Better Accuracy)
 ```bash
 ros2 launch lyra_bringup robot.launch.py mode:=teleop imu:=true
+ros2 launch lyra_bringup robot.launch.py mode:=slam imu:=true
+ros2 launch lyra_bringup robot.launch.py mode:=nav map:=~/maps/house_map.yaml imu:=true
 ```
-- More stable movement
-- Better odometry tracking
 
-### With Camera
+### Enable Camera
 ```bash
 ros2 launch lyra_bringup robot.launch.py mode:=slam camera:=true
 ```
-- View live camera feed
-- Useful for visual inspection
 
-### With Both IMU and Camera
+### Enable Both IMU and Camera
 ```bash
 ros2 launch lyra_bringup robot.launch.py mode:=slam imu:=true camera:=true
 ```
 
----
-
-## 📊 Monitoring Robot Status
-
-### Battery Level
-```bash
-# See the battery voltage live
-ros2 topic echo /battery_voltage
-```
-- Voltage reading updates every second
-- **Alert:** Below 10V, robot may shut down
-
-### Speed and Rotation
-```bash
-# See current speeds
-ros2 topic echo /odometry/filtered
-```
-
-### LiDAR Scans
-```bash
-# See what LiDAR detects
-ros2 topic echo /scan | head -5
-```
-
-### Motor RPM
-```bash
-ros2 topic echo /motor_rpm
-```
-
-### RViz Visualization (See Everything Visually!)
-```bash
-# While robot is running, in a new terminal:
-ros2 launch lyra_visualization rviz.launch.py
-```
-- See the map being created
-- See robot position
-- Monitor sensor data
-- Very helpful for SLAM and navigation
+**Note:** IMU helps with odometry and turn accuracy. If the robot spins unexpectedly, try disabling it.
 
 ---
 
-## ❌ Troubleshooting
+---
 
-### "Connection refused" when trying to control robot
-**Solution:**
-- Check WiFi connection to robot network
-- Verify robot IP: `ping 192.168.4.1`
-- Check if robot is powered on
+## 📊 Command Reference
 
-### Robot doesn't move with joystick
-**Solution:**
-- Check joystick is detected: `ros2 topic echo /joy`
-- Check battery level
-- Restart robot and try again
+All these commands work after sourcing the command utility:
 
-### Map looks weird or incomplete
-**Solution:**
-- Save and retry SLAM
-- Drive more slowly
-- Make sure you cover all areas
-- Check LiDAR is working: `ros2 topic echo /scan`
+```bash
+source ~/lyra_ws/lyra_commands.sh
+```
 
-### "Mode not recognized"
-**Solution:**
-- Use exactly: `teleop`, `slam`, or `nav`
-- Example: `ros2 launch lyra_bringup robot.launch.py mode:=teleop`
+### **Launch Commands**
+```bash
+lyra-launch-robot-teleop          # Start in manual control mode
+lyra-launch-robot-slam            # Start in mapping mode
+lyra-launch-robot-nav <map>       # Start autonomous navigation (requires map file)
+lyra-launch-base                  # Just the base (motors, odometry, no SLAM/Nav2)
+lyra-launch-rviz                  # Open RViz visualization tool
+lyra-launch-bridge                # Just the hardware bridge
+```
 
-### Robot keeps turning left/right
-**Solution:**
-- IMU may need calibration
-- Try without IMU first: `mode:=teleop imu:=false`
-- Call your system administrator
+### **Control Commands**
+```bash
+lyra-arm                          # Enable motors (REQUIRED before driving)
+lyra-disarm                       # Disable motors (do when finished)
+lyra-stop                         # EMERGENCY STOP (hard stop)
+lyra-ros-mode-on                  # Enable ROS mode
+lyra-ros-mode-off                 # Disable ROS mode
+```
+
+### **Status/Monitoring Commands**
+```bash
+lyra-status                       # Quick health check (nodes, armed status, battery)
+lyra-battery                      # Current battery voltage in real-time
+lyra-armed-status                 # Check if motors are armed
+lyra-nodes                        # List all running ROS nodes
+lyra-topics                       # List all active ROS topics
+lyra-info                         # Robot information
+```
+
+###  **Diagnostic Commands**
+```bash
+lyra-test-hardware                # Test hardware components
+lyra-test-connectivity            # Check network connection
+lyra-help                         # Show all available commands
+```
+
+### **Cleanup Commands**
+```bash
+lyra-cleanup                      # Stop all nodes gracefully
+lyra-kill                         # Force stop all processes
+lyra-reset-services              # Reset all services
+```
+
+**For complete details, see:** [docs_ros2/LYRA_QUICK_REFERENCE.md](docs_ros2/LYRA_QUICK_REFERENCE.md)
 
 ---
 
-## 🗺️ Navigation Guide
+## 🔍 Monitoring Robot Status
 
-### Step-by-Step Autonomous Navigation
-
-**Phase 1: Create a Map (First Time Only)**
+### Battery Voltage
 ```bash
-# Terminal 1
-ros2 launch lyra_bringup robot.launch.py mode:=slam
+lyra-battery                      # Simple check
+ros2 topic echo /battery_voltage  # Live updates
+```
+- **Normal:** 12V-13.2V
+- **Low:** 10V-12V (reduce usage)
+- **Critical:** Below 10V (may shut down)
 
-# Terminal 2 (after map is good)
-ros2 run nav2_map_server map_saver_cli -f ~/maps/house_map
+### Odometry & Positioning
+```bash
+ros2 topic echo /odom             # Position and velocity
 ```
 
-**Phase 2: Use the Map**
+### Sensor Data
 ```bash
-ros2 launch lyra_bringup robot.launch.py mode:=nav map:=~/maps/house_map.yaml
+ros2 topic echo /scan             # LiDAR scan data
+ros2 topic echo /imu/data_raw     # IMU accelerometer/gyro
 ```
 
-**Phase 3: Send Navigation Goals**
-
-Option A - Using RViz (Visual):
+### RViz Visualization
 ```bash
-ros2 launch lyra_visualization rviz.launch.py
-# Click "2D Pose Estimate" to set start location
-# Click "Nav2 Goal" to set target location
-```
-
-Option B - Command Line:
-```bash
-ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose \
-  "{goal_pose: {pose: {position: {x: 2.0, y: 1.0, z: 0}, orientation: {w: 1.0}}}}"
+lyra-launch-rviz
+# Shows:
+# - Robot position in real-time
+# - LiDAR scans
+# - Map (if in SLAM mode)
+# - Sensor data
 ```
 
 ---
 
-## 🛠️ Command Cheat Sheet
+## ⚠️ Common Issues & Solutions
 
-For quick commands without remembering long ROS syntax, use the provided command utility:
+### "Command not found: lyra-*" or "lyra-help not working"
 
+**Problem:** Commands aren't recognized
+
+**Solution:**
 ```bash
-# Activate command shortcuts
-source ~/ros2_ws/install/setup.bash
+# Make sure you've sourced the command utility:
+source ~/lyra_ws/lyra_commands.sh
 
-# Now use simple commands:
-lyra-launch-robot-teleop      # Manual control
-lyra-launch-robot-slam         # Mapping mode
-lyra-launch-robot-nav          # Navigation mode
-lyra-monitor-battery           # Check battery
-lyra-monitor-imu               # Check IMU data
-lyra-stop-robot                # Emergency stop
-lyra-cleanup                   # Clean up all processes
+# Or add to ~/.bashrc for automatic loading:
+echo "source ~/lyra_ws/lyra_commands.sh" >> ~/.bashrc
+source ~/.bashrc
 ```
 
-See [Command Utility Reference](docs_ros2/LYRA_QUICK_REFERENCE.md) for full list.
+### Robot doesn't respond to joystick
+
+**Check 1: Is joystick detected?**
+```bash
+ros2 topic echo /joy
+# Should show joystick data when you move sticks/buttons
+```
+
+**Check 2: Are motors armed?**
+```bash
+lyra-armed-status
+# Should show armed: true
+```
+
+**If not armed:**
+```bash
+lyra-arm
+```
+
+**Check 3: Battery voltage**
+```bash
+lyra-battery
+# Should be above 10V
+# Below 10V = low battery, may not respond properly
+```
+
+### Robot spins in circles when moving forward
+
+**Likely cause:** Wheels aren't calibrated the same
+
+**Solutions:**
+1. Check wheel encoder values: `ros2 topic echo /motor_rpm`
+2. Try disabling IMU (it may be causing drift):
+   ```bash
+   ros2 launch lyra_bringup robot.launch.py mode:=teleop imu:=false
+   ```
+3. Contact your system administrator if problem persists
+
+### Can't see robot from laptopAI (multi-machine ROS2)
+
+This is a network configuration issue. Typically:
+- Robot and laptop need to be on same WiFi
+- ROS_DOMAIN_ID must match on both machines  
+- Firewall may be blocking communication
+
+Contact your system administrator for network help.
+
+### RViz shows no data/visualization
+
+**Check:**
+```bash
+# Are robot nodes running?
+ros2 node list
+# Should show /lyra_node, /ekf_filter_node, etc.
+
+# Are topics publishing?
+ros2 topic list | grep -E "odom|scan|imu"
+# Should show topics
+```
+
+**If no nodes:** The robot may not be running. Try `lyra-launch-robot-teleop`
+
+### Map looks incomplete or has scan artifacts
+
+**This is normal for SLAM!** Try:
+1. Drive more slowly
+2. Revisit areas to improve mapping
+3. Cover all spaces including corners
+4. Save the map: `ros2 run nav2_map_server map_saver_cli -f ~/maps/my_map`
+
+### Robot won't start (motors disabled)
+
+**Check:**
+```bash
+lyra-status
+# Look for any error messages
+```
+
+**Try:**
+```bash
+lyra-arm     # Enable motors
+```
+
+If still doesn't work:
+```bash
+lyra-reset-services     # Reset services
+lyra-cleanup            # Stop all
+```
+
+Then restart: `lyra-launch-robot-teleop`
+
+---
+
+## 📁 What's Included in This Repository
 
 ---
 
