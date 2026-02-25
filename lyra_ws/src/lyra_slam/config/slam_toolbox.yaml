@@ -1,0 +1,68 @@
+/**:
+  ros__parameters:
+
+    tf_buffer_duration: 30.0
+    transform_timeout: 2.0
+    throttle_scans: 1
+
+    # Lifecycle
+    autostart: true
+
+    # Mode
+    mode: mapping
+    use_sim_time: false
+
+    # Frames
+    map_frame: map
+    odom_frame: odom
+    base_frame: base_footprint
+
+    # Topics
+    scan_topic: /scan
+    odom_topic: /odometry/filtered
+
+    # Publishing
+    publish_map: true
+    publish_tf: true
+    publish_pose: true
+
+    # Timing
+    transform_publish_period: 0.05
+    map_update_interval: 0.5
+
+    # Laser
+    resolution: 0.05
+    max_laser_range: 12.0
+    minimum_time_interval: 0.1
+    scan_buffer_size: 20
+    scan_queue_size: 50
+
+    # Map size limits
+    map_size_x: 100.0  # 100m x 100m map
+    map_size_y: 100.0
+    map_start_x: -50.0  # Center robot in map
+    map_start_y: -50.0
+
+    # Motion thresholds
+    minimum_travel_distance: 0.15
+    minimum_travel_heading: 0.35
+
+    # Scan matching
+    use_scan_matching: true
+    use_scan_barycenter: true
+
+    # Loop closure
+    do_loop_closing: true
+    loop_search_maximum_distance: 3.0
+
+    # Correlation (more conservative for stability)
+    correlation_search_space_dimension: 0.5
+    correlation_search_space_resolution: 0.01
+    correlation_search_space_smear_deviation: 0.1
+
+    # Penalties
+    distance_variance_penalty: 0.5
+    angle_variance_penalty: 3.0          # was 1.0 (too loose)
+    fine_search_angle_offset: 0.0015     # was 0.00349
+    coarse_search_angle_offset: 0.15     # was 0.349 (~20°)
+    coarse_angle_resolution: 0.0349

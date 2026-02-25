@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BeetleBot URDF - Converted from SolidWorks Komodo export -->
+<!-- Updated for ROS2 with proper sensor frames -->
+<robot name="beetlebot">
+  
+  <!-- ============================================ -->
+  <!-- Base Link (Robot Chassis)                   -->
+  <!-- ============================================ -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.0018364 6.9915E-05 -0.06926" rpy="0 0 0" />
+      <mass value="1.8736" />
+      <inertia
+        ixx="0.014078" ixy="-3.4159E-10" ixz="2.0623E-07"
+        iyy="0.01865" iyz="-1.7296E-10" izz="0.02809" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/base_link.STL" />
+      </geometry>
+      <material name="gray">
+        <color rgba="0.26667 0.26667 0.26667 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ============================================ -->
+  <!-- Base Footprint (Ground Projection)          -->
+  <!-- ============================================ -->
+  <link name="base_footprint">
+  </link>
+  
+  <joint name="base_footprint_joint" type="fixed">
+    <origin xyz="0 0 0.163" rpy="0 0 0" />
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+  </joint>
+
+  <!-- ============================================ -->
+  <!-- Front Left Wheel                             -->
+  <!-- ============================================ -->
+  <link name="fl_link">
+    <inertial>
+      <origin xyz="-6.7346E-07 0.0035209 -4.0633E-07" rpy="0 0 0" />
+      <mass value="0.16035" />
+      <inertia
+        ixx="0.00026368" ixy="6.0617E-10" ixz="5.2706E-10"
+        iyy="0.0004127" iyz="3.6649E-10" izz="0.00026368" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/fl_link.STL" />
+      </geometry>
+      <material name="blue">
+        <color rgba="0.078431 0.21961 0.6902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/fl_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="fl_joint" type="continuous">
+    <origin xyz="0.094485 0.1475 -0.098" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="fl_link" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <!-- ============================================ -->
+  <!-- Back Left Wheel                              -->
+  <!-- ============================================ -->
+  <link name="bl_link">
+    <inertial>
+      <origin xyz="4.0635E-07 0.0035209 6.7345E-07" rpy="0 0 0" />
+      <mass value="0.16035" />
+      <inertia
+        ixx="0.00026368" ixy="-3.6539E-10" ixz="5.2422E-10"
+        iyy="0.0004127" iyz="-6.0683E-10" izz="0.00026368" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/bl_link.STL" />
+      </geometry>
+      <material name="blue">
+        <color rgba="0.078431 0.21961 0.6902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/bl_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="bl_joint" type="continuous">
+    <origin xyz="-0.086515 0.1475 -0.098" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="bl_link" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <!-- ============================================ -->
+  <!-- Back Right Wheel                             -->
+  <!-- ============================================ -->
+  <link name="br_link">
+    <inertial>
+      <origin xyz="6.7346E-07 -0.0035209 -4.0633E-07" rpy="0 0 0" />
+      <mass value="0.16035" />
+      <inertia
+        ixx="0.00026368" ixy="6.0617E-10" ixz="-5.2706E-10"
+        iyy="0.0004127" iyz="-3.6649E-10" izz="0.00026368" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/br_link.STL" />
+      </geometry>
+      <material name="blue">
+        <color rgba="0.078431 0.21961 0.6902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/br_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="br_joint" type="continuous">
+    <origin xyz="-0.086515 -0.1475 -0.098" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="br_link" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <!-- ============================================ -->
+  <!-- Front Right Wheel                            -->
+  <!-- ============================================ -->
+  <link name="fr_link">
+    <inertial>
+      <origin xyz="-4.0635E-07 -0.0035209 6.7345E-07" rpy="0 0 0" />
+      <mass value="0.16035" />
+      <inertia
+        ixx="0.00026368" ixy="-3.6539E-10" ixz="-5.2422E-10"
+        iyy="0.0004127" iyz="6.0683E-10" izz="0.00026368" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/fr_link.STL" />
+      </geometry>
+      <material name="blue">
+        <color rgba="0.078431 0.21961 0.6902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/fr_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="fr_joint" type="continuous">
+    <origin xyz="0.094485 -0.1475 -0.098" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="fr_link" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <!-- ============================================ -->
+  <!-- LIDAR Sensor                                 -->
+  <!-- ============================================ -->
+  <link name="lidar_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.17" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/lidar_link.STL" />
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.25 0.25 0.25 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://beetlebot_description/meshes/lidar_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="lidar_joint" type="fixed">
+    <origin xyz="0.084985 0.00029956 0.042706" rpy="0 0 3.14159265359" />
+    <parent link="base_link" />
+    <child link="lidar_link" />
+  </joint>
+
+  <!-- ============================================ -->
+  <!-- Camera Link (Pi Camera V1.3)                 -->
+  <!-- ============================================ -->
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.024 0.009"/>
+      </geometry>
+      <material name="green">
+        <color rgba="0.0 0.8 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.024 0.009"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.003"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" 
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <origin xyz="0.15 0 -0.075" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <!-- Camera Optical Frame (for image processing) -->
+  <link name="camera_optical_link"/>
+  
+  <joint name="camera_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+    <parent link="camera_link"/>
+    <child link="camera_optical_link"/>
+  </joint>
+
+  <!-- ============================================ -->
+  <!-- IMU Link (LSM6DSRTR inside STM32)            -->
+  <!-- ============================================ -->
+  <link name="imu_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.003"/>
+      </geometry>
+      <material name="red">
+        <color rgba="0.8 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0"
+               iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <origin xyz="0 0 -0.02" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+  </joint>
+
+</robot>

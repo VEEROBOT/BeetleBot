@@ -1,0 +1,71 @@
+##############################################################################
+# Joystick Configuration for Lyra Robot
+# FIXED YAML STRUCTURE for ROS2 Parameter Loading
+##############################################################################
+
+# teleop_twist_joy node parameters
+# NOTE: Must be under teleop_twist_joy_node namespace for ros2 run
+teleop_twist_joy_node:
+  ros__parameters:
+    # Axes
+    axis_linear:
+      x: 1
+      y: -1
+      z: -1
+    
+    axis_angular:
+      pitch: -1
+      roll: -1
+      yaw: 3
+    
+    # Normal speed scales
+    scale_linear:
+      x: 0.5
+      y: 0.0
+      z: 0.0
+    
+    scale_angular:
+      pitch: 0.0
+      roll: 0.0
+      yaw: 1.5
+    
+    # Turbo speed scales
+    scale_linear_turbo:
+      x: 1.0
+      y: 0.0
+      z: 0.0
+    
+    scale_angular_turbo:
+      pitch: 0.0
+      roll: 0.0
+      yaw: 3.0
+    
+    # Buttons (SWAPPED for your controller)
+    enable_button: 4          # Physical LB
+    enable_turbo_button: 5    # Physical RB
+    
+    # Settings
+    require_enable_button: true
+    inverted_reverse: true
+    inverted_turn: false
+    publish_stamped_twist: false
+
+# joy_node parameters
+joy_node:
+  ros__parameters:
+    device_id: 0
+    device_name: ''
+    deadzone: 0.05
+    autorepeat_rate: 20.0
+    coalesce_interval_ms: 1
+
+# joy_teleop_wrapper parameters
+joy_teleop_wrapper:
+  ros__parameters:
+    arm_button: 7
+    disarm_button: 6
+    arm_service: '/lyra/arm'
+    disarm_service: '/lyra/disarm'
+    button_debounce_time: 0.3
+    service_timeout: 1.0
+    log_button_presses: true
