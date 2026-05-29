@@ -58,7 +58,7 @@ Deployed at university robotics labs across India. Available for worldwide purch
 │   Raspberry Pi 5 — ROS2 Brain   │
 │   Nav2 · SLAM · EKF · Joystick  │
 └────┬──────────────┬───────┬──────┘
-     │ UART3        │ USB   │ USB
+     │ UART3        │ CSI   │ USB
      ▼              ▼       ▼
 ┌──────────┐  ┌────────┐ ┌────────┐
 │  Lyra    │  │ Camera │ │ LiDAR  │
